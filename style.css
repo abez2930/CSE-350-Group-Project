@@ -1,6 +1,17 @@
-*{
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
+body {
+   padding: 50px 200px; 
+}
+
+.dropdown-box {
+   width: 300px;
+}
+
+.dropdown-box .selected-item input{
+    border: 1px solid rgb(129, 129, 129);
+}
