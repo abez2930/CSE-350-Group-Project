@@ -4,120 +4,27 @@
         <meta charset="UTF-8" />
         <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
-        <title>WeatherNow!</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="script.js" defer></script>
 
+        <title>WeatherNow!</title>
+
+        <link rel="stylesheet" href="style.css">
+        <script src="weatherData.js" defer></script>
     </head>
 
     <body>
-        <!--First dropdown button option-->
-        <select name="capitals" id="capitals_1">
-            <option value="Montgomery">Montgomery</option>
-            <option value="Juneau">Juneau</option>
-            <option value="Phoenix">Phoenix</option>
-            <option value="Little Rock">Little Rock</option>
-            <option value="Sacramento">Sacramento</option>
-            <option value="Denver">Denver</option>
-            <option value="Hartford">Hartford</option>
-            <option value="Dover">Dover</option>
-            <option value="Tallahassee">Tallahassee</option>
-            <option value="Atlanta">Atlanta</option>
-            <option value="Honolulu">Honolulu</option>
-            <option value="Boise">Boise</option>
-            <option value="Springfield">Springfield</option>
-            <option value="Indianapolis">Indianapolis</option>
-            <option value="Des Moines">Des Moines</option>
-            <option value="Topeka">Topeka</option>
-            <option value="Frankfort">Frankfort</option>
-            <option value="Baton Rouge">Baton Rouge</option>
-            <option value="Augusta">Augusta</option>
-            <option value="Annapolis">Annapolis</option>
-            <option value="Boston">Boston</option>
-            <option value="Lansing">Lansing</option>
-            <option value="Saint Paul">Saint Paul</option>
-            <option value="Jackson">Jackson</option>
-            <option value="Jefferson City">Jefferson City</option>
-            <option value="Helena">Helena</option>
-            <option value="Lincoln">Lincoln</option>
-            <option value="Carson City">Carson City</option>
-            <option value="Concord">Concord</option>
-            <option value="Trenton">Trenton</option>
-            <option value="Santa Fe">Santa Fe</option>
-            <option value="Albany">Albany</option>
-            <option value="Raleigh">Raleigh</option>
-            <option value="Bismarck">Bismarck</option>
-            <option value="Columbus">Columbus</option>
-            <option value="Oklahoma City">Oklahoma City</option>
-            <option value="Salem">Salem</option>
-            <option value="Harrisburg">Harrisburg</option>
-            <option value="Providence">Providence</option>
-            <option value="Columbia">Columbia</option>
-            <option value="Pierre">Pierre</option>
-            <option value="Nashville">Nashville</option>
-            <option value="Austin">Austin</option>
-            <option value="Salt Lake City">Salt Lake City</option>
-            <option value="Montpelier">Montpelier</option>
-            <option value="Richmond">Richmond</option>
-            <option value="Olympia">Olympia</option>
-            <option value="Charleston">Charleston</option>
-            <option value="Madison">Madison</option>
-            <option value="Cheyenne">Cheyenne</option>
+        <!-- Temporary dropdown for testing purposes -->
+        <select id="city1" onchange="getWeather()">
+            <option value="">Select city</option>
+            <option value="0">New York, NY</option>
+            <option value="1">Los Angeles, CA</option>
+            <option value="2">Chicago, IL</option>
+            <option value="3">Houston, TX</option>
+            <option value="26">Louisville, KY</option>
         </select>
 
-        <!-- This is the second dropdown button option -->
-         <select name="capitals" id="capitals_2">
-            <option value="Montgomery">Montgomery</option>
-            <option value="Juneau">Juneau</option>
-            <option value="Phoenix">Phoenix</option>
-            <option value="Little Rock">Little Rock</option>
-            <option value="Sacramento">Sacramento</option>
-            <option value="Denver">Denver</option>
-            <option value="Hartford">Hartford</option>
-            <option value="Dover">Dover</option>
-            <option value="Tallahassee">Tallahassee</option>
-            <option value="Atlanta">Atlanta</option>
-            <option value="Honolulu">Honolulu</option>
-            <option value="Boise">Boise</option>
-            <option value="Springfield">Springfield</option>
-            <option value="Indianapolis">Indianapolis</option>
-            <option value="Des Moines">Des Moines</option>
-            <option value="Topeka">Topeka</option>
-            <option value="Frankfort">Frankfort</option>
-            <option value="Baton Rouge">Baton Rouge</option>
-            <option value="Augusta">Augusta</option>
-            <option value="Annapolis">Annapolis</option>
-            <option value="Boston">Boston</option>
-            <option value="Lansing">Lansing</option>
-            <option value="Saint Paul">Saint Paul</option>
-            <option value="Jackson">Jackson</option>
-            <option value="Jefferson City">Jefferson City</option>
-            <option value="Helena">Helena</option>
-            <option value="Lincoln">Lincoln</option>
-            <option value="Carson City">Carson City</option>
-            <option value="Concord">Concord</option>
-            <option value="Trenton">Trenton</option>
-            <option value="Santa Fe">Santa Fe</option>
-            <option value="Albany">Albany</option>
-            <option value="Raleigh">Raleigh</option>
-            <option value="Bismarck">Bismarck</option>
-            <option value="Columbus">Columbus</option>
-            <option value="Oklahoma City">Oklahoma City</option>
-            <option value="Salem">Salem</option>
-            <option value="Harrisburg">Harrisburg</option>
-            <option value="Providence">Providence</option>
-            <option value="Columbia">Columbia</option>
-            <option value="Pierre">Pierre</option>
-            <option value="Nashville">Nashville</option>
-            <option value="Austin">Austin</option>
-            <option value="Salt Lake City">Salt Lake City</option>
-            <option value="Montpelier">Montpelier</option>
-            <option value="Richmond">Richmond</option>
-            <option value="Olympia">Olympia</option>
-            <option value="Charleston">Charleston</option>
-            <option value="Madison">Madison</option>
-            <option value="Cheyenne">Cheyenne</option>
-        </select>
-        
+        <br><br>
+
+        <!-- Temporary text box for testing purposes -->
+        <textarea id="weather" rows="7" cols="60" readonly></textarea>
     </body>
 </html>
