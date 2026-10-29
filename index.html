@@ -4,13 +4,27 @@
         <meta charset="UTF-8" />
         <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
-        <title>WeatherNow!</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="script.js" defer></script>
 
+        <title>WeatherNow!</title>
+
+        <link rel="stylesheet" href="style.css">
+        <script src="weatherData.js" defer></script>
     </head>
 
     <body>
-        <!-- This is the meat of the backend of the website-->
+        <!-- Temporary dropdown for testing purposes -->
+        <select id="city1" onchange="getWeather()">
+            <option value="">Select city</option>
+            <option value="0">New York, NY</option>
+            <option value="1">Los Angeles, CA</option>
+            <option value="2">Chicago, IL</option>
+            <option value="3">Houston, TX</option>
+            <option value="26">Louisville, KY</option>
+        </select>
+
+        <br><br>
+
+        <!-- Temporary text box for testing purposes -->
+        <textarea id="weather" rows="7" cols="60" readonly></textarea>
     </body>
 </html>
