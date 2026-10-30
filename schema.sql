@@ -11,12 +11,11 @@ CREATE TABLE `cities` (
   `temperature` decimal(5,2) DEFAULT NULL,
   `humidity` decimal(5,2) DEFAULT NULL,
   `windDirection` varchar(10) DEFAULT NULL,
-  `pressure` decimal(7,2) DEFAULT NULL,
+  `windSpeed` decimal(7,2) DEFAULT NULL,
+  `pressure` decimal(8,2) DEFAULT NULL,
   `conditions` varchar(50) DEFAULT NULL,
   `querytime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
+);
 --@block
 SELECT * FROM CITIES;
---@block
-DROP TABLE IF EXISTS `cities`;

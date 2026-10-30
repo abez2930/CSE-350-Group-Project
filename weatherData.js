@@ -9,66 +9,54 @@ async function getWeather() {
     }
 
     try {
-        // Read cities.csv
-        const response = await fetch("cities.csv");
-        const csv = await response.text();
-        const rows = csv.trim().split(/\r?\n/);
-
-        // Find the selected city's ID
-        const selectedId = cityValue;
-        let station = "";
-
-        for (let i = 1; i < rows.length; i++) {
-            const columns = rows[i].split(",");
-            const id = columns[0].trim();
-
-            if (id === selectedId) {
-                station = columns[5].trim();
-                break;
-            }
-        }
-
-        // Check that a station was found
-        if (station === "") {
-            output.value = "Weather station not found.";
-            return;
-        }
-
-        // Request latest weather observation
-        const weatherResponse = await fetch(
-            `https://api.weather.gov/stations/${station}/observations/latest`,
-            {
-                headers: {
-                    "Accept": "application/geo+json"
-                }
-            }
+        const response = await fetch(
+            `/api/weather/${encodeURIComponent(cityValue)}`
         );
 
-        const data = await weatherResponse.json();
-        const properties = data.properties;
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Weather data request failed.");
+        }
 
-        // Get weather data
-        const temperature = properties.temperature.value;
-        const humidity = properties.relativeHumidity.value;
-        const windDirection = properties.windDirection.value;
-        const windSpeed = properties.windSpeed.value;
-        const pressure = properties.barometricPressure.value;
-        const conditions = properties.textDescription;
-        const location = properties.stationName;
-        const timestamp = properties.timestamp;
+        const data = await response.json();
+        const temperature = data.temperature === null
+            ? null
+            : Number(data.temperature);
+        const humidity = data.humidity === null
+            ? null
+            : Number(data.humidity);
+        const windDirection = data.windDirection === null
+            ? null
+            : Number(data.windDirection);
+        const windSpeed = data.windSpeed === null
+            ? null
+            : Number(data.windSpeed);
+        const pressure = data.pressure === null
+            ? null
+            : Number(data.pressure);
+        const conditions = data.conditions || "Conditions unavailable";
 
         // Format weather data
-        const tempText =
-            (temperature * 9 / 5 + 32).toFixed(0) + " °F";
-
-        const humidityText = humidity.toFixed(0) + "%";
-        const pressureText = (pressure / 100).toFixed(0);
+        const tempText = temperature === null
+            ? "Unavailable"
+            : (temperature * 9 / 5 + 32).toFixed(0) + " °F";
+        const humidityText = humidity === null
+            ? "Unavailable"
+            : humidity.toFixed(0) + "%";
+        const pressureText = pressure === null
+            ? "Unavailable"
+            : (pressure / 100).toFixed(0);
 
         // Format wind data based on direction
         let windText = "";
 
-        if (windSpeed == 0) {
+        if (windSpeed === null) {
+            windText = "Unavailable";
+        } else if (windSpeed === 0) {
             windText = "Calm";
+        } else if (windDirection === null) {
+            windText = "Direction unavailable at " +
+                (windSpeed / 1.609).toFixed(0) + "mph";
         } else if (windDirection < 12.25) {
             windText = windDirection + "°N at " +
                 (windSpeed / 1.609).toFixed(0) + "mph";
@@ -124,8 +112,8 @@ async function getWeather() {
 
         // Output weather data
         output.value =
-            "Station: " + location +
-            "\nTimestamp: " + new Date(timestamp).toLocaleString() +
+            "Station: " + data.city + ", " + data.state +
+            "\nTimestamp: " + new Date(data.querytime).toLocaleString() +
             "\nTemperature: " + tempText +
             "\nHumidity: " + humidityText +
             "\nAir Pressure: " + pressureText +

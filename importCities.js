@@ -5,10 +5,10 @@ const mysql = require("mysql2/promise");
 async function importCSV() {
 
     const db = await mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "1234",
-        database: "weather_data"
+        host: process.env.DB_HOST || "localhost",
+        user: process.env.DB_USER || "root",
+        password: process.env.DB_PASSWORD || "1234",
+        database: process.env.DB_NAME || "weather_data"
     });
 
     const rows = [];
