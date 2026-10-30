@@ -1,100 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-        <title>WeatherNow!</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Compare the current weather in two U.S. cities side by side, using National Weather Service observations.">
+        <title>WeatherNow</title>
         <link rel="stylesheet" href="style.css">
         <script src="script.js" defer></script>
-
     </head>
-
     <body>
-        <div class="dropdown-box">
-            <div class="selected-item">
-                <input type="text" name="" value="Select" readonly id="">
+        <header class="site-header">
+            <div class="site-header-intro">
+                <h1 class="site-title">WeatherNow</h1>
+                <p class="site-description">
+                    Compare the latest weather data between two U.S. cities by selecting a city in each panel.
+                </p>
             </div>
-            <div class="dropdown-content">
-                <div class="search-input">
-                    <input type="text" name="" id="">
-                </div>
-                <ul id="itemList">
-                    <li class="dropdown-item active">Select a City</li>
-                    <li class="dropdown-item">New York, NY</li>
-                    <li class="dropdown-item">Los Angeles, CA</li>
-                    <li class="dropdown-item">Chicago, IL</li>
-                    <li class="dropdown-item">Houston, TX</li>
-                    <li class="dropdown-item">Phoenix, AZ</li>
-                    <li class="dropdown-item">Philadelphia, PA</li>
-                    <li class="dropdown-item">San Antonio, TX</li>
-                    <li class="dropdown-item">San Diego, CA</li>
-                    <li class="dropdown-item">Dallas, TX</li>
-                    <li class="dropdown-item">San Jose, CA</li>
-                    <li class="dropdown-item">Fort Worth, TX</li>
-                    <li class="dropdown-item">Jacksonville, FL</li>
-                    <li class="dropdown-item">Austin, TX</li>
-                    <li class="dropdown-item">San Jose, CA</li>
-                    <li class="dropdown-item">Charlotte, NC</li>
-                    <li class="dropdown-item">Columbus, OH</li>
-                    <li class="dropdown-item">Indianapolis, IN</li>
-                    <li class="dropdown-item">San Francisco, CA</li>
-                    <li class="dropdown-item">Seattle, WA</li>
-                    <li class="dropdown-item">Denver, CO</li>
-                    <li class="dropdown-item">Nashville, TN</li>
-                    <li class="dropdown-item">Oklahoma City, OK</li>
-                    <li class="dropdown-item">Washington, DC</li>
-                    <li class="dropdown-item">El Paso, TX</li>
-                    <li class="dropdown-item">Las Vegas, NV</li>
-                    <li class="dropdown-item">Boston, MA</li>
-                    <li class="dropdown-item">Detroit, MI</li>
-                    <li class="dropdown-item">Louisville, KY</li>
-                    <li class="dropdown-item">Portland, OR</li>
-                    <li class="dropdown-item">Memphis, TN</li>
-                    <li class="dropdown-item">Baltimore, MD</li>
-                    <li class="dropdown-item">Milwaukee, WI</li>
-                    <li class="dropdown-item">Albuquerque, NM</li>
-                    <li class="dropdown-item">Fresno, CA</li>
-                    <li class="dropdown-item">Tucson, AZ</li>
-                    <li class="dropdown-item">Sacramento, CA</li>
-                    <li class="dropdown-item">Atlanta, GA</li>
-                    <li class="dropdown-item">Kansas City, MO</li>
-                    <li class="dropdown-item">Mesa, AZ</li>
-                    <li class="dropdown-item">Raleigh, NC</li>
-                    <li class="dropdown-item">Colorado Springs, CO</li>
-                    <li class="dropdown-item">Miami, FL</li>
-                    <li class="dropdown-item">Omaha, NE</li>
-                    <li class="dropdown-item">Virginia Beach, VA</li>
-                    <li class="dropdown-item">Long Beach, CA</li>
-                    <li class="dropdown-item">Oakland, CA</li>
-                    <li class="dropdown-item">Minneapolis, MN</li>
-                    <li class="dropdown-item">Bakersfield, CA</li>
-                    <li class="dropdown-item">Tulsa, OK</li>
-                    <li class="dropdown-item">Tampa, FL</li>
-                    <li class="dropdown-item">Aurora, CO</li>
-                    <li class="dropdown-item">Arlington, TX</li>
-                    <li class="dropdown-item">Wichita, KS</li>
-                    <li class="dropdown-item">Cleveland, OH</li>
-                    <li class="dropdown-item">New Orleans, LA</li>
-                    <li class="dropdown-item">Henderson, NV</li>
-                    <li class="dropdown-item">Honolulu, HI</li>
-                    <li class="dropdown-item">Anaheim, CA</li>
-                    <li class="dropdown-item">Orlando, FL</li>
-                    <li class="dropdown-item">Lexington, KY</li>
-                    <li class="dropdown-item">Stockton, CA</li>
-                    <li class="dropdown-item">Newark, NJ</li>
-                    <li class="dropdown-item">Riverside, CA</li>
-                    <li class="dropdown-item">Irvine, CA</li>
-                    <li class="dropdown-item">Corpus Christi, TX</li>
-                    <li class="dropdown-item">Santa Ana, CA</li>
-                    <li class="dropdown-item">Cincinnati, OH</li>
-                    <li class="dropdown-item">Greensboro, NC</li>
-                    <li class="dropdown-item">Pittsburgh, PA</li>
-                    <li class="dropdown-item">St.Paul, MN</li>
-                    <li class="dropdown-item">Durham, NC</li>
-                    <li class="dropdown-item">Jersey City, NJ</li>
-                    </ul>
+            <aside class="safety-notice" aria-labelledby="safety-heading">
+                <h2 id="safety-heading" class="safety-notice-title">Not for safety decisions</h2>
+                <p>
+                    WeatherNow only shows recently recorded data and does not offer forecasts or alerts.
+                    If you are experiencing severe weather, please refer to <a href="https://www.weather.gov">weather.gov</a>
+                    and follow proper instructions from local officials.
+                </p>
+            </aside>
+        </header>
+ 
+        <main id="main">
+            <!--
+                Notes:
+                - Eventually both dropdown lists should be generated from a single city list with coordinates.
+                - For each city panel, data-state controls status (empty, loading, loaded, error).
+                  JS will handle the changing of that attribute later on.
+            -->
+            <div class="dashboard">
+                <section class="units" aria-labelledby="units-heading">
+                    <div class="units-intro">
+                        <h2 id="units-heading" class="units-title">Units</h2>
+                        <p class="units-info">Applies to both cities</p>
+                    </div>
+
+                    <fieldset class="segmented">
+                        <legend class="segmented-legend">Temperature</legend>
+                        <div class="segmented-options">
+                            <input type="radio" id="unit-temperature-f" name="unit-temperature" value="F" checked>
+                            <label for="unit-temperature-f">°F</label>
+                            <input type="radio" id="unit-temperature-c" name="unit-temperature" value="C">
+                            <label for="unit-temperature-c">°C</label>
+                            <input type="radio" id="unit-temperature-k" name="unit-temperature" value="K">
+                            <label for="unit-temperature-k">K</label>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="segmented">
+                        <legend class="segmented-legend">Pressure</legend>
+                        <div class="segmented-options">
+                            <input type="radio" id="unit-pressure-inhg" name="unit-pressure" value="inHg" checked>
+                            <label for="unit-pressure-inhg">inHg</label>
+                            <input type="radio" id="unit-pressure-hpa" name="unit-pressure" value="hPa">
+                            <label for="unit-pressure-hpa">hPa</label>
+                            <input type="radio" id="unit-pressure-mbar" name="unit-pressure" value="mbar">
+                            <label for="unit-pressure-mbar">mbar</label>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="segmented">
+                        <legend class="segmented-legend">Wind speed</legend>
+                        <div class="segmented-options">
+                            <input type="radio" id="unit-wind-mph" name="unit-wind" value="mph" checked>
+                            <label for="unit-wind-mph">mph</label>
+                            <input type="radio" id="unit-wind-kph" name="unit-wind" value="kph">
+                            <label for="unit-wind-kph">kph</label>
+                            <input type="radio" id="unit-wind-ms" name="unit-wind" value="m/s">
+                            <label for="unit-wind-ms">m/s</label>
+                            <input type="radio" id="unit-wind-knots" name="unit-wind" value="knots">
+                            <label for="unit-wind-knots">knots</label>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <!-- City A: Loaded state -->
+                <section class="city-panel-a" aria-labelledby="city-a-heading" data-state="loaded">
+                    <div class="city-panel-header">
+                        <span class="city-badge" aria-hidden="true">A</span>
+                        <h2 id="city-a-heading" class="city-panel-title">City A</h2>
+                    </div>
+                    <div class="city-search">
+                        <label class="city-search-label" for="city-a-selected">Choose a city</label>
+                        <div class="city-search-dropdown" id="city-a-dropdown">
+                            <div class="city-search-selected">
+                                <input type="text" name="city-a" value="Louisville, KY" readonly id="city-a-selected">
+                            </div>
+                            <div class="city-search-menu">
+                                <div class="city-search-filter">
+                                    <input type="text" name="city-a-filter" id="city-a-filter" placeholder="Search for a city"
+                                           aria-label="Search for a city" autocomplete="off" spellcheck="false">
+                                </div>
+                                <ul class="city-search-list" id="city-a-list">
+                                    <li class="city-search-option">Select a city</li>
+                                    <li class="city-search-option">New York, NY</li>
+                                    <li class="city-search-option">Los Angeles, CA</li>
+                                    <li class="city-search-option">Chicago, IL</li>
+                                    <li class="city-search-option">Houston, TX</li>
+                                    <li class="city-search-option">Phoenix, AZ</li>
+                                    <li class="city-search-option">Philadelphia, PA</li>
+                                    <li class="city-search-option">San Antonio, TX</li>
+                                    <li class="city-search-option">San Diego, CA</li>
+                                    <li class="city-search-option">Dallas, TX</li>
+                                    <li class="city-search-option">San Jose, CA</li>
+                                    <li class="city-search-option">Fort Worth, TX</li>
+                                    <li class="city-search-option">Jacksonville, FL</li>
+                                    <li class="city-search-option">Austin, TX</li>
+                                    <li class="city-search-option">Charlotte, NC</li>
+                                    <li class="city-search-option">Columbus, OH</li>
+                                    <li class="city-search-option">Indianapolis, IN</li>
+                                    <li class="city-search-option">San Francisco, CA</li>
+                                    <li class="city-search-option">Seattle, WA</li>
+                                    <li class="city-search-option">Denver, CO</li>
+                                    <li class="city-search-option">Nashville, TN</li>
+                                    <li class="city-search-option">Oklahoma City, OK</li>
+                                    <li class="city-search-option">Washington, DC</li>
+                                    <li class="city-search-option">El Paso, TX</li>
+                                    <li class="city-search-option">Las Vegas, NV</li>
+                                    <li class="city-search-option">Boston, MA</li>
+                                    <li class="city-search-option">Detroit, MI</li>
+                                    <li class="city-search-option is-selected">Louisville, KY</li>
+                                    <li class="city-search-option">Portland, OR</li>
+                                    <li class="city-search-option">Memphis, TN</li>
+                                    <li class="city-search-option">Baltimore, MD</li>
+                                    <li class="city-search-option">Milwaukee, WI</li>
+                                    <li class="city-search-option">Albuquerque, NM</li>
+                                    <li class="city-search-option">Fresno, CA</li>
+                                    <li class="city-search-option">Tucson, AZ</li>
+                                    <li class="city-search-option">Sacramento, CA</li>
+                                    <li class="city-search-option">Atlanta, GA</li>
+                                    <li class="city-search-option">Kansas City, MO</li>
+                                    <li class="city-search-option">Mesa, AZ</li>
+                                    <li class="city-search-option">Raleigh, NC</li>
+                                    <li class="city-search-option">Colorado Springs, CO</li>
+                                    <li class="city-search-option">Miami, FL</li>
+                                    <li class="city-search-option">Omaha, NE</li>
+                                    <li class="city-search-option">Virginia Beach, VA</li>
+                                    <li class="city-search-option">Long Beach, CA</li>
+                                    <li class="city-search-option">Oakland, CA</li>
+                                    <li class="city-search-option">Minneapolis, MN</li>
+                                    <li class="city-search-option">Bakersfield, CA</li>
+                                    <li class="city-search-option">Tulsa, OK</li>
+                                    <li class="city-search-option">Tampa, FL</li>
+                                    <li class="city-search-option">Aurora, CO</li>
+                                    <li class="city-search-option">Arlington, TX</li>
+                                    <li class="city-search-option">Wichita, KS</li>
+                                    <li class="city-search-option">Cleveland, OH</li>
+                                    <li class="city-search-option">New Orleans, LA</li>
+                                    <li class="city-search-option">Henderson, NV</li>
+                                    <li class="city-search-option">Honolulu, HI</li>
+                                    <li class="city-search-option">Anaheim, CA</li>
+                                    <li class="city-search-option">Orlando, FL</li>
+                                    <li class="city-search-option">Lexington, KY</li>
+                                    <li class="city-search-option">Stockton, CA</li>
+                                    <li class="city-search-option">Newark, NJ</li>
+                                    <li class="city-search-option">Riverside, CA</li>
+                                    <li class="city-search-option">Irvine, CA</li>
+                                    <li class="city-search-option">Corpus Christi, TX</li>
+                                    <li class="city-search-option">Santa Ana, CA</li>
+                                    <li class="city-search-option">Cincinnati, OH</li>
+                                    <li class="city-search-option">Greensboro, NC</li>
+                                    <li class="city-search-option">Pittsburgh, PA</li>
+                                    <li class="city-search-option">St. Paul, MN</li>
+                                    <li class="city-search-option">Durham, NC</li>
+                                    <li class="city-search-option">Jersey City, NJ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="city-panel-body" aria-live="polite">
+                        <div class="panel-state-empty">
+                            <p>Search for a city above to see its current conditions.</p>
+                        </div>
+
+                        <div class="panel-state-loading">
+                            <span class="spinner" aria-hidden="true"></span>
+                            <p>Getting current conditions for <span data-field="city-name">Louisville, KY</span>…</p>
+                        </div>
+
+                        <div class="panel-state-error">
+                            <h3 class="panel-error-title">Couldn't get weather for <span data-field="city-name">Louisville, KY</span></h3>
+                            <p>The National Weather Service couldn't respond. It may be busy or temporarily down.</p>
+                            <button type="button" class="button">Try again</button>
+                        </div>
+
+                        <div class="panel-state-loaded">
+                            <p class="conditions">
+                                <span class="conditions-temp"><span data-field="temperature">64</span><span class="unit-tight" data-unit="temperature">°F</span></span>
+                                <span class="conditions-text" data-field="condition">Partly cloudy</span>
+                            </p>
+ 
+                            <dl class="readings">
+                                <div class="readings-row">
+                                    <dt>Dew point</dt>
+                                    <dd><span data-field="dewpoint">49</span><span class="unit-tight" data-unit="temperature">°F</span></dd>
+                                </div>
+                                <div class="readings-row">
+                                    <dt>Humidity</dt>
+                                    <dd><span data-field="humidity">58</span><span class="unit-tight">%</span></dd>
+                                </div>
+                                <div class="readings-row">
+                                    <dt>Pressure</dt>
+                                    <dd class="is-missing"><span data-field="pressure">Not reported</span><span class="unit" data-unit="pressure">inHg</span></dd>
+                                </div>
+                                <div class="readings-row">
+                                    <dt>Wind speed</dt>
+                                    <dd><span data-field="wind">8</span><span class="unit" data-unit="wind">mph</span></dd>
+                                </div>
+                            </dl>
+ 
+                            <dl class="observation">
+                                <div class="observation-row">
+                                    <dt>Observed</dt>
+                                    <dd><time data-field="observed" datetime="2026-10-16T12:53-04:00">12:53 PM EDT</time></dd>
+                                </div>
+                                <div class="observation-row">
+                                    <dt>Retrieved</dt>
+                                    <dd><time data-field="retrieved" datetime="2026-10-16T13:14-04:00">1:14 PM EDT</time></dd>
+                                </div>
+                                <div class="observation-row">
+                                    <dt>Station</dt>
+                                    <dd data-field="station">KSDF, Louisville International Airport</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </section>
+ 
+                <!-- City B: Error state -->
+                <section class="city-panel-b" aria-labelledby="city-b-heading" data-state="error">
+                    <div class="city-panel-header">
+                        <span class="city-badge" aria-hidden="true">B</span>
+                        <h2 id="city-b-heading" class="city-panel-title">City B</h2>
+                    </div>
+ 
+                    <div class="city-search">
+                        <label class="city-search-label" for="city-b-selected">Choose a city</label>
+                        <div class="city-search-dropdown" id="city-b-dropdown">
+                            <div class="city-search-selected">
+                                <input type="text" name="city-b" value="Denver, CO" readonly id="city-b-selected">
+                            </div>
+                            <div class="city-search-menu">
+                                <div class="city-search-filter">
+                                    <input type="text" name="city-b-filter" id="city-b-filter" placeholder="Search for a city"
+                                           aria-label="Search for a city" autocomplete="off" spellcheck="false">
+                                </div>
+                                <ul class="city-search-list" id="city-b-list">
+                                    <li class="city-search-option">Select a city</li>
+                                    <li class="city-search-option">New York, NY</li>
+                                    <li class="city-search-option">Los Angeles, CA</li>
+                                    <li class="city-search-option">Chicago, IL</li>
+                                    <li class="city-search-option">Houston, TX</li>
+                                    <li class="city-search-option">Phoenix, AZ</li>
+                                    <li class="city-search-option">Philadelphia, PA</li>
+                                    <li class="city-search-option">San Antonio, TX</li>
+                                    <li class="city-search-option">San Diego, CA</li>
+                                    <li class="city-search-option">Dallas, TX</li>
+                                    <li class="city-search-option">San Jose, CA</li>
+                                    <li class="city-search-option">Fort Worth, TX</li>
+                                    <li class="city-search-option">Jacksonville, FL</li>
+                                    <li class="city-search-option">Austin, TX</li>
+                                    <li class="city-search-option">Charlotte, NC</li>
+                                    <li class="city-search-option">Columbus, OH</li>
+                                    <li class="city-search-option">Indianapolis, IN</li>
+                                    <li class="city-search-option">San Francisco, CA</li>
+                                    <li class="city-search-option">Seattle, WA</li>
+                                    <li class="city-search-option is-selected">Denver, CO</li>
+                                    <li class="city-search-option">Nashville, TN</li>
+                                    <li class="city-search-option">Oklahoma City, OK</li>
+                                    <li class="city-search-option">Washington, DC</li>
+                                    <li class="city-search-option">El Paso, TX</li>
+                                    <li class="city-search-option">Las Vegas, NV</li>
+                                    <li class="city-search-option">Boston, MA</li>
+                                    <li class="city-search-option">Detroit, MI</li>
+                                    <li class="city-search-option">Louisville, KY</li>
+                                    <li class="city-search-option">Portland, OR</li>
+                                    <li class="city-search-option">Memphis, TN</li>
+                                    <li class="city-search-option">Baltimore, MD</li>
+                                    <li class="city-search-option">Milwaukee, WI</li>
+                                    <li class="city-search-option">Albuquerque, NM</li>
+                                    <li class="city-search-option">Fresno, CA</li>
+                                    <li class="city-search-option">Tucson, AZ</li>
+                                    <li class="city-search-option">Sacramento, CA</li>
+                                    <li class="city-search-option">Atlanta, GA</li>
+                                    <li class="city-search-option">Kansas City, MO</li>
+                                    <li class="city-search-option">Mesa, AZ</li>
+                                    <li class="city-search-option">Raleigh, NC</li>
+                                    <li class="city-search-option">Colorado Springs, CO</li>
+                                    <li class="city-search-option">Miami, FL</li>
+                                    <li class="city-search-option">Omaha, NE</li>
+                                    <li class="city-search-option">Virginia Beach, VA</li>
+                                    <li class="city-search-option">Long Beach, CA</li>
+                                    <li class="city-search-option">Oakland, CA</li>
+                                    <li class="city-search-option">Minneapolis, MN</li>
+                                    <li class="city-search-option">Bakersfield, CA</li>
+                                    <li class="city-search-option">Tulsa, OK</li>
+                                    <li class="city-search-option">Tampa, FL</li>
+                                    <li class="city-search-option">Aurora, CO</li>
+                                    <li class="city-search-option">Arlington, TX</li>
+                                    <li class="city-search-option">Wichita, KS</li>
+                                    <li class="city-search-option">Cleveland, OH</li>
+                                    <li class="city-search-option">New Orleans, LA</li>
+                                    <li class="city-search-option">Henderson, NV</li>
+                                    <li class="city-search-option">Honolulu, HI</li>
+                                    <li class="city-search-option">Anaheim, CA</li>
+                                    <li class="city-search-option">Orlando, FL</li>
+                                    <li class="city-search-option">Lexington, KY</li>
+                                    <li class="city-search-option">Stockton, CA</li>
+                                    <li class="city-search-option">Newark, NJ</li>
+                                    <li class="city-search-option">Riverside, CA</li>
+                                    <li class="city-search-option">Irvine, CA</li>
+                                    <li class="city-search-option">Corpus Christi, TX</li>
+                                    <li class="city-search-option">Santa Ana, CA</li>
+                                    <li class="city-search-option">Cincinnati, OH</li>
+                                    <li class="city-search-option">Greensboro, NC</li>
+                                    <li class="city-search-option">Pittsburgh, PA</li>
+                                    <li class="city-search-option">St. Paul, MN</li>
+                                    <li class="city-search-option">Durham, NC</li>
+                                    <li class="city-search-option">Jersey City, NJ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="city-panel-body" aria-live="polite">
+                        <div class="panel-state-empty">
+                            <p>Search for a city above to see its current conditions.</p>
+                        </div>
+ 
+                        <div class="panel-state-loading">
+                            <span class="spinner" aria-hidden="true"></span>
+                            <p>Getting current conditions for <span data-field="city-name">Denver, CO</span>…</p>
+                        </div>
+ 
+                        <div class="panel-state-error">
+                            <h3 class="panel-error-title">Couldn't get weather for <span data-field="city-name">Denver, CO</span></h3>
+                            <p>The National Weather Service didn't respond. It may be busy or temporarily down.</p>
+                            <button type="button" class="button">Try again</button>
+                        </div>
+ 
+                        <div class="panel-state-loaded">
+                            <p class="conditions">
+                                <span class="conditions-temp"><span data-field="temperature">--</span><span class="unit-tight" data-unit="temperature">°F</span></span>
+                                <span class="conditions-text" data-field="condition">--</span>
+                            </p>
+ 
+                            <dl class="readings">
+                                <div class="readings-row">
+                                    <dt>Dew point</dt>
+                                    <dd><span data-field="dewpoint">--</span><span class="unit-tight" data-unit="temperature">°F</span></dd>
+                                </div>
+                                <div class="readings-row">
+                                    <dt>Humidity</dt>
+                                    <dd><span data-field="humidity">--</span><span class="unit-tight">%</span></dd>
+                                </div>
+                                <div class="readings-row">
+                                    <dt>Pressure</dt>
+                                    <dd><span data-field="pressure">--</span><span class="unit" data-unit="pressure">inHg</span></dd>
+                                </div>
+                                <div class="readings-row">
+                                    <dt>Wind speed</dt>
+                                    <dd><span data-field="wind">--</span><span class="unit" data-unit="wind">mph</span></dd>
+                                </div>
+                            </dl>
+ 
+                            <dl class="observation">
+                                <div class="observation-row">
+                                    <dt>Observed</dt>
+                                    <dd><time data-field="observed">--</time></dd>
+                                </div>
+                                <div class="observation-row">
+                                    <dt>Retrieved</dt>
+                                    <dd><time data-field="retrieved">--</time></dd>
+                                </div>
+                                <div class="observation-row">
+                                    <dt>Station</dt>
+                                    <dd data-field="station">--</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Reference leafletjs.com -->
+                <section class="map-panel" aria-labelledby="map-heading">
+                    <h2 id="map-heading" class="visually-hidden">Map of selected cities</h2>
+                    <div class="map" role="img"
+                         aria-label="Map of the contiguous United States marking City A, Louisville, Kentucky, and City B, Denver, Colorado.">
+                        <div class="map-frame">
+                            <svg class="map-svg" viewBox="0 0 1000 545.9" aria-hidden="true" focusable="false">
+                                <path class="map-land" d="M14.6,36.5 28.6,41.8 42.1,43.1 48.8,36.0 48.0,20.7 512.6,20.7 520.2,27.1 542.1,30.9 558.9,36.0 574.1,43.6 585.9,42.3 606.1,46.1 626.3,38.5 666.7,61.1 686.0,73.5 692.8,83.3 698.7,89.4 702.0,94.3 708.8,96.7 725.6,111.1 727.3,136.1 726.9,166.3 725.6,175.5 718.9,181.2 715.2,188.0 723.9,194.8 750.8,183.5 771.0,175.5 785.4,169.5 783.3,160.3 792.9,154.8 811.4,152.0 829.5,140.1 836.7,134.9 846.8,124.3 856.4,119.5 910.8,119.3 917.8,112.3 921.7,113.8 929.3,101.5 931.8,93.1 936.0,78.4 948.8,59.9 954.5,66.1 964.6,62.1 973.2,69.3 973.4,96.7 979.0,105.1 984.0,114.7 986.9,123.8 976.4,131.4 966.3,136.1 944.4,145.4 932.7,152.4 924.2,164.5 925.9,174.3 919.2,181.2 925.1,190.3 927.6,194.4 935.2,194.1 932.7,187.6 936.9,191.4 936.9,196.6 925.1,199.8 917.5,200.4 911.6,203.1 904.0,204.9 887.2,206.0 875.4,211.6 871.2,215.0 868.7,219.4 869.0,223.8 867.8,233.8 862.0,246.9 852.7,257.1 845.1,249.1 850.2,260.3 851.0,267.5 846.0,279.2 835.5,295.8 836.4,285.6 837.2,277.1 830.8,266.4 830.8,255.6 834.2,243.6 828.3,250.2 826.6,258.8 828.3,270.7 830.0,279.2 830.0,292.0 830.0,299.4 835.5,301.5 842.6,323.4 842.9,335.2 835.0,338.5 826.1,348.1 811.4,350.2 802.2,363.4 786.2,367.5 779.5,376.5 769.4,386.6 755.9,395.6 750.8,401.5 745.8,416.3 743.3,432.0 746.6,443.7 758.4,469.7 757.6,478.3 766.8,501.1 766.0,516.1 765.2,520.8 760.9,531.0 752.5,532.0 748.3,530.1 745.8,519.8 737.4,514.2 730.6,502.0 723.1,489.7 721.4,482.1 723.1,466.8 719.7,456.3 707.1,441.7 698.7,437.9 693.6,441.7 683.5,447.6 676.8,446.0 671.7,436.9 658.2,432.0 646.5,433.4 639.7,434.9 632.2,434.9 626.3,432.6 616.2,432.4 606.1,436.5 609.4,444.7 613.6,455.3 609.4,460.1 600.2,454.3 592.6,458.2 582.5,455.3 575.8,451.4 565.7,447.6 555.6,447.6 543.8,444.3 534.5,445.6 523.6,449.5 519.4,452.4 510.1,460.1 498.3,466.8 488.2,474.5 481.5,481.2 478.1,485.9 475.6,497.3 476.4,508.6 479.0,516.8 473.1,518.0 461.3,515.2 446.1,507.7 440.2,497.3 439.4,487.8 425.9,472.6 420.9,461.1 415.8,452.2 407.4,444.7 392.3,442.1 385.5,444.7 378.8,459.5 370.4,456.3 356.9,448.3 351.9,439.8 346.8,428.1 333.3,416.3 321.5,404.9 292.8,404.9 292.8,413.8 244.6,413.8 181.6,390.8 183.2,386.2 142.8,390.0 140.6,382.6 138.9,376.5 133.0,371.5 127.9,367.5 121.2,365.4 119.5,359.8 114.5,360.0 107.7,357.3 99.3,352.2 86.4,351.2 83.3,342.0 83.3,335.8 79.1,330.7 72.4,326.5 62.3,313.0 61.4,306.7 64.0,301.5 59.8,299.4 53.9,294.1 52.2,282.4 43.8,277.1 37.0,266.4 31.1,255.6 30.3,242.5 20.2,224.3 25.3,211.6 23.6,194.8 20.2,180.1 17.7,170.0 23.6,157.1 25.3,143.1 26.1,129.0 27.8,107.5 26.1,89.4 25.3,73.5 22.7,61.1 16.0,47.4ZM869.5,221.2 878.8,220.5 890.6,216.1 904.7,210.1 897.3,211.6 892.3,212.7 878.8,213.4 871.2,215.6Z"/>
+                                <path class="map-lakes" d="M564.0,77.9 584.2,72.3 592.6,80.9 611.1,74.2 625.4,63.6 634.7,59.4 630.5,68.6 625.4,77.2 643.1,82.1 655.7,85.3 667.5,79.1 684.3,76.7 685.2,83.8 692.8,83.3 686.0,73.5 666.7,61.1 626.3,38.5 606.1,46.1 594.3,52.4 575.8,68.6ZM641.4,197.1 639.4,191.9 636.0,181.2 635.0,165.6 638.0,148.9 640.6,136.1 646.5,123.1 650.7,112.3 639.7,123.1 633.0,130.2 639.7,117.1 649.0,101.5 662.5,96.7 676.8,93.1 687.7,99.1 688.0,100.8 683.5,105.1 674.2,114.7 665.8,121.9 662.5,137.2 658.2,152.4 662.8,164.9 661.6,180.1 656.6,189.2 652.4,194.8 645.6,197.7ZM688.0,100.8 692.4,103.9 703.4,109.5 709.9,118.1 712.1,126.6 708.8,137.2 702.0,144.3 702.9,152.4 710.4,144.3 718.0,141.5 723.9,145.4 725.6,157.1 726.9,166.3 727.3,136.1 725.6,111.1 708.8,96.7 702.0,96.7 694.4,96.0 688.0,98.6ZM715.2,188.0 710.4,191.4 709.6,195.9 718.0,200.4 722.2,201.6 734.0,200.9 739.1,200.4 754.2,191.4 766.0,186.2 779.0,178.2 785.4,169.5 771.0,175.5 750.8,183.5 723.9,194.8 715.2,188.0ZM783.3,160.3 792.9,158.2 808.1,160.5 819.0,160.1 826.6,155.7 831.6,152.4 831.6,144.3 829.5,140.1 811.4,152.0 792.9,154.8 783.3,160.3Z"/>
+                            </svg>
+                            <!-- --x and --y are the city's position on the map as percentages -->
+                            <span class="map-pin-a" style="--x: 67.1%; --y: 49.8%;">
+                                <span class="map-pin-marker">A</span>
+                                <span class="map-pin-label">Louisville, KY</span>
+                            </span>
+                            <span class="map-pin-b" style="--x: 34.7%; --y: 43.9%;">
+                                <span class="map-pin-marker">B</span>
+                                <span class="map-pin-label">Denver, CO</span>
+                            </span>
+                        </div>
+                    </div>
+                </section>
             </div>
-  
+        </main>
     </body>
 </html>
