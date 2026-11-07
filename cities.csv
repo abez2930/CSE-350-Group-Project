@@ -1,4 +1,4 @@
-id,city,state,longitude,latitude,station
+id,city,state,latitude,longitude,station
 0,New York,NY,40.6667,-73.9333,KJRB
 1,Los Angeles,CA,34.0167,-118.4167,KSMO
 2,Chicago,IL,41.8333,-87.6833,KMDW
