@@ -139,3 +139,716 @@ async function getWeather() {
         output.value = "Unable to retrieve weather data. Please try again.";
     }
 }
+
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ==========================================
+    // 1. STORE THE SELECTED UNITS AND CITY DATA
+    // ==========================================
+
+    const selectedUnits = {
+        temperature:
+            document.querySelector('input[name="unit-temperature"]:checked')?.value || "F",
+
+        pressure:
+            document.querySelector('input[name="unit-pressure"]:checked')?.value || "inHg",
+
+        wind:
+            document.querySelector('input[name="unit-wind"]:checked')?.value || "mph"
+    };
+
+    const cityWeather = {
+        a: null,
+        b: null
+    };
+
+    const cityNames = {
+        a: "Louisville, KY",
+        b: "Denver, CO"
+    };
+
+    function citiesAreTheSame(cityKey, cityName) {
+        const otherCityKey = cityKey === "a" ? "b" : "a";
+        return cityName.toLowerCase() === cityNames[otherCityKey].toLowerCase();
+    }
+
+    const unitLabels = {
+        temperature: {
+            F: "°F",
+            C: "°C",
+            K: "K"
+        },
+
+        pressure: {
+            inHg: "inHg",
+            hPa: "hPa",
+            mbar: "mbar"
+        },
+
+        wind: {
+            mph: "mph",
+            kph: "km/h",
+            "m/s": "m/s",
+            knots: "knots"
+        }
+    };
+
+
+    // ==========================================
+    // 2. TEMPERATURE CONVERSION
+    // ==========================================
+
+    function convertTemperature(celsius, unit) {
+
+        if (celsius === null || !Number.isFinite(celsius)) {
+            return null;
+        }
+
+        if (unit === "F") {
+            return (celsius * 9 / 5) + 32;
+        }
+
+        if (unit === "K") {
+            return celsius + 273.15;
+        }
+
+        return celsius;
+    }
+
+
+    // ==========================================
+    // 3. PRESSURE CONVERSION
+    // ==========================================
+
+    function convertPressure(hPa, unit) {
+
+        if (hPa === null || !Number.isFinite(hPa)) {
+            return null;
+        }
+
+        if (unit === "inHg") {
+            return hPa / 33.8638866667;
+        }
+
+        // hPa and mbar have the same numerical value.
+        return hPa;
+    }
+
+
+    // ==========================================
+    // 4. WIND SPEED CONVERSION
+    // ==========================================
+
+    function convertWind(metersPerSecond, unit) {
+
+        if (
+            metersPerSecond === null ||
+            !Number.isFinite(metersPerSecond)
+        ) {
+            return null;
+        }
+
+        const factors = {
+            mph: 2.2369362921,
+            kph: 3.6,
+            "m/s": 1,
+            knots: 1.9438444924
+        };
+
+        return metersPerSecond * factors[unit];
+    }
+
+
+    // ==========================================
+    // 5. FORMAT THE WEATHER NUMBERS
+    // ==========================================
+
+    function formatNumber(value, digits = 1) {
+
+        if (value === null || !Number.isFinite(value)) {
+            return "Not reported";
+        }
+
+        return value.toFixed(digits);
+    }
+
+
+    // ==========================================
+    // 6. DISPLAY WEATHER FOR ONE CITY
+    // ==========================================
+
+    function renderCity(cityKey) {
+
+        const weather = cityWeather[cityKey];
+
+        const panel = document.querySelector(
+            `.city-panel-${cityKey}`
+        );
+
+        if (!weather || !panel) return;
+
+        function setField(name, value) {
+
+            const element = panel.querySelector(
+                `[data-field="${name}"]`
+            );
+
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        // Temperature and dew point
+        setField(
+            "temperature",
+            formatNumber(
+                convertTemperature(
+                    weather.temperatureC,
+                    selectedUnits.temperature
+                )
+            )
+        );
+
+        setField(
+            "dewpoint",
+            formatNumber(
+                convertTemperature(
+                    weather.dewpointC,
+                    selectedUnits.temperature
+                )
+            )
+        );
+
+        // Pressure
+        setField(
+            "pressure",
+            formatNumber(
+                convertPressure(
+                    weather.pressureHpa,
+                    selectedUnits.pressure
+                )
+            )
+        );
+
+        // Wind speed
+        setField(
+            "wind",
+            formatNumber(
+                convertWind(
+                    weather.windMps,
+                    selectedUnits.wind
+                )
+            )
+        );
+
+        // Other weather information
+        setField(
+            "humidity",
+            weather.humidity === null
+                ? "Not reported"
+                : `${formatNumber(weather.humidity, 0)}%`
+        );
+
+        setField(
+            "condition",
+            weather.conditions || "Conditions not reported"
+        );
+
+        setField(
+            "observed",
+            weather.observed
+                ? new Date(weather.observed).toLocaleString()
+                : "Not reported"
+        );
+
+        setField(
+            "retrieved",
+            new Date().toLocaleString()
+        );
+
+        setField(
+            "station",
+            weather.station || "Not reported"
+        );
+
+        // Update the measurement labels
+        panel.querySelectorAll('[data-unit="temperature"]')
+            .forEach(element => {
+                element.textContent =
+                    unitLabels.temperature[selectedUnits.temperature];
+            });
+
+        panel.querySelectorAll('[data-unit="pressure"]')
+            .forEach(element => {
+                element.textContent =
+                    unitLabels.pressure[selectedUnits.pressure];
+            });
+
+        panel.querySelectorAll('[data-unit="wind"]')
+            .forEach(element => {
+                element.textContent =
+                    unitLabels.wind[selectedUnits.wind];
+            });
+    }
+
+
+    // ==========================================
+    // 7. UPDATE BOTH CITY PANELS
+    // ==========================================
+
+    function renderAllCities() {
+
+        renderCity("a");
+
+        renderCity("b");
+    }
+
+
+    // ==========================================
+    // 8. CONVERT STATE ABBREVIATIONS
+    // ==========================================
+
+    function stateName(abbreviation) {
+
+        const states = {
+            AL:"Alabama", AK:"Alaska", AZ:"Arizona",
+            AR:"Arkansas", CA:"California", CO:"Colorado",
+            CT:"Connecticut", DE:"Delaware", FL:"Florida",
+            GA:"Georgia", HI:"Hawaii", ID:"Idaho",
+            IL:"Illinois", IN:"Indiana", IA:"Iowa",
+            KS:"Kansas", KY:"Kentucky", LA:"Louisiana",
+            ME:"Maine", MD:"Maryland", MA:"Massachusetts",
+            MI:"Michigan", MN:"Minnesota", MS:"Mississippi",
+            MO:"Missouri", MT:"Montana", NE:"Nebraska",
+            NV:"Nevada", NH:"New Hampshire", NJ:"New Jersey",
+            NM:"New Mexico", NY:"New York", NC:"North Carolina",
+            ND:"North Dakota", OH:"Ohio", OK:"Oklahoma",
+            OR:"Oregon", PA:"Pennsylvania", RI:"Rhode Island",
+            SC:"South Carolina", SD:"South Dakota",
+            TN:"Tennessee", TX:"Texas", UT:"Utah",
+            VT:"Vermont", VA:"Virginia", WA:"Washington",
+            WV:"West Virginia", WI:"Wisconsin",
+            WY:"Wyoming", DC:"District of Columbia"
+        };
+
+        return states[abbreviation] || abbreviation;
+    }
+
+
+    // ==========================================
+    // 9. UPDATE CITY WEATHER FROM THE API
+    // ==========================================
+
+    async function loadCityWeather(cityKey, cityName) {
+
+        const panel = document.querySelector(
+            `.city-panel-${cityKey}`
+        );
+
+        if (!panel) return;
+
+        cityNames[cityKey] = cityName;
+
+        panel.dataset.state = "loading";
+
+        panel.querySelectorAll('[data-field="city-name"]')
+            .forEach(element => {
+                element.textContent = cityName;
+            });
+
+        try {
+
+            // Find the city's coordinates
+            const searchUrl =
+                `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName.split(",")[0])}&count=10&language=en&format=json`;
+
+            const geoResponse = await fetch(searchUrl);
+
+            if (!geoResponse.ok) {
+                throw new Error("Could not look up this city.");
+            }
+
+            const geoData = await geoResponse.json();
+
+            const wantedState = cityName.split(",")[1]?.trim();
+
+            const match = (geoData.results || []).find(place =>
+                place.country_code === "US" &&
+                (!wantedState ||
+                    place.admin1 === stateName(wantedState))
+            ) || (geoData.results || []).find(place =>
+                place.country_code === "US"
+            );
+
+            if (!match) {
+                throw new Error("City coordinates were not found.");
+            }
+
+
+            // Find the National Weather Service location
+            const pointResponse = await fetch(
+                `https://api.weather.gov/points/${match.latitude},${match.longitude}`,
+                {
+                    headers: {
+                        Accept: "application/geo+json"
+                    }
+                }
+            );
+
+            if (!pointResponse.ok) {
+                throw new Error(
+                    "The National Weather Service could not locate this city."
+                );
+            }
+
+            const pointData = await pointResponse.json();
+
+            const stationsUrl =
+                pointData.properties?.observationStations;
+
+            if (!stationsUrl) {
+                throw new Error("No nearby weather station was found.");
+            }
+
+
+            // Find the closest reporting station
+            const stationsResponse = await fetch(stationsUrl, {
+                headers: {
+                    Accept: "application/geo+json"
+                }
+            });
+
+            if (!stationsResponse.ok) {
+                throw new Error(
+                    "Could not retrieve nearby weather stations."
+                );
+            }
+
+            const stationsData = await stationsResponse.json();
+
+            const station = stationsData.features?.[0];
+
+            if (!station?.id) {
+                throw new Error(
+                    "No reporting weather station was found."
+                );
+            }
+
+
+            // Get the latest weather observation
+            const observationResponse = await fetch(
+                `${station.id}/observations/latest`,
+                {
+                    headers: {
+                        Accept: "application/geo+json"
+                    }
+                }
+            );
+
+            if (!observationResponse.ok) {
+                throw new Error(
+                    "The latest weather observation is unavailable."
+                );
+            }
+
+            const observationData =
+                await observationResponse.json();
+
+            const p = observationData.properties || {};
+
+
+            // Save weather in standard units
+            cityWeather[cityKey] = {
+
+                temperatureC:
+                    p.temperature?.value ?? null,
+
+                dewpointC:
+                    p.dewpoint?.value ?? null,
+
+                humidity:
+                    p.relativeHumidity?.value ?? null,
+
+                pressureHpa:
+                    p.barometricPressure?.value == null
+                        ? null
+                        : p.barometricPressure.value / 100,
+
+                windMps:
+                    p.windSpeed?.value == null
+                        ? null
+                        : p.windSpeed.value / 3.6,
+
+                conditions:
+                    p.textDescription || "Conditions not reported",
+
+                observed:
+                    p.timestamp || null,
+
+                station:
+                    p.stationName ||
+                    station.properties?.name ||
+                    station.id.split("/").pop()
+            };
+
+
+            // Display the new weather information
+            renderCity(cityKey);
+
+            panel.dataset.state = "loaded";
+
+            updateMapLabel(cityKey, cityName);
+
+        } catch (error) {
+
+            console.error(
+                `WeatherNow ${cityKey.toUpperCase()} error:`,
+                error
+            );
+
+            panel.dataset.state = "error";
+
+            const errorTitle = panel.querySelector(
+                '[data-field="city-name"]'
+            );
+
+            if (errorTitle) {
+                errorTitle.textContent = cityName;
+            }
+        }
+    }
+
+
+    // ==========================================
+    // 10. UPDATE THE MAP CITY LABEL
+    // ==========================================
+
+    function updateMapLabel(cityKey, cityName) {
+
+        const pin = document.querySelector(
+            `.map-pin-${cityKey} .map-pin-label`
+        );
+
+        if (pin) {
+            pin.textContent = cityName;
+        }
+    }
+
+
+    // ==========================================
+    // 11. CONNECT THE UNIT CONVERSION BUTTONS
+    // ==========================================
+
+    document.querySelectorAll('input[name^="unit-"]')
+        .forEach(radio => {
+
+            radio.addEventListener("change", () => {
+
+                if (!radio.checked) return;
+
+                if (radio.name === "unit-temperature") {
+                    selectedUnits.temperature = radio.value;
+                }
+
+                if (radio.name === "unit-pressure") {
+                    selectedUnits.pressure = radio.value;
+                }
+
+                if (radio.name === "unit-wind") {
+                    selectedUnits.wind = radio.value;
+                }
+
+                // Update both cities
+                renderAllCities();
+            });
+        });
+
+
+    // ==========================================
+    // 12. MAKE THE CITY DROPDOWNS WORK
+    // ==========================================
+
+    function setupCityDropdown(cityKey) {
+
+        const dropdown = document.getElementById(
+            `city-${cityKey}-dropdown`
+        );
+
+        const selectedInput = document.getElementById(
+            `city-${cityKey}-selected`
+        );
+
+        const filterInput = document.getElementById(
+            `city-${cityKey}-filter`
+        );
+
+        const list = document.getElementById(
+            `city-${cityKey}-list`
+        );
+
+        if (!dropdown || !selectedInput ||
+            !filterInput || !list) {
+            return;
+        }
+
+        const options = Array.from(
+            list.querySelectorAll("li[data-value]")
+        );
+
+
+        // Close the dropdown
+        function closeDropdown() {
+
+            dropdown.classList.remove("is-open");
+        }
+
+
+        // Open and close the dropdown
+        selectedInput.addEventListener("click", () => {
+
+            const willOpen =
+                !dropdown.classList.contains("is-open");
+
+            document.querySelectorAll(
+                ".city-search-dropdown.is-open"
+            ).forEach(element => {
+                element.classList.remove("is-open");
+            });
+
+            if (willOpen) {
+
+                dropdown.classList.add("is-open");
+
+                filterInput.value = "";
+
+                options.forEach(option => {
+                    option.hidden = false;
+                });
+
+                filterInput.focus();
+            }
+        });
+
+
+        // Search and filter cities
+        filterInput.addEventListener("input", () => {
+
+            const search =
+                filterInput.value.trim().toLowerCase();
+
+            options.forEach(option => {
+
+                option.hidden =
+                    !option.textContent.trim()
+                        .toLowerCase()
+                        .includes(search);
+            });
+        });
+
+
+        // Select a city
+        options.forEach(option => {
+
+            option.addEventListener("click", () => {
+
+                const cityName = option.textContent.trim();
+
+                if (!cityName) return;
+
+                //To prevent both buttons from having the same cities
+                if (citiesAreTheSame(cityKey, cityName)) {
+                    alert("You cannot select the same city for both buttons. Please choose a different city.");
+                    return;
+                }
+
+                selectedInput.value = cityName;
+
+                options.forEach(item => {
+
+                    item.classList.toggle(
+                        "is-selected",
+                        item === option
+                    );
+                });
+
+                closeDropdown();
+
+                // Load weather for the selected city
+                loadCityWeather(cityKey, cityName);
+            });
+        });
+
+
+        // Allow keyboard selection
+        filterInput.addEventListener("keydown", event => {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                const firstVisible =
+                    options.find(option => !option.hidden);
+
+                if (firstVisible) {
+                    firstVisible.click();
+                }
+
+            } else if (event.key === "Escape") {
+
+                closeDropdown();
+
+                selectedInput.focus();
+            }
+        });
+
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", event => {
+
+            if (!dropdown.contains(event.target)) {
+                closeDropdown();
+            }
+        });
+    }
+
+
+    // ==========================================
+    // 13. ACTIVATE BOTH CITY DROPDOWNS
+    // ==========================================
+
+    setupCityDropdown("a");
+
+    setupCityDropdown("b");
+
+
+    // ==========================================
+    // 14. CONNECT THE RETRY BUTTONS
+    // ==========================================
+
+    document.querySelectorAll(
+        ".panel-state-error .button"
+    ).forEach((button, index) => {
+
+        button.addEventListener("click", () => {
+
+            const cityKey = index === 0 ? "a" : "b";
+
+            loadCityWeather(
+                cityKey,
+                cityNames[cityKey]
+            );
+        });
+    });
+
+
+    // ==========================================
+    // 15. LOAD THE DEFAULT CITIES
+    // ==========================================
+
+    loadCityWeather("a", cityNames.a);
+
+    loadCityWeather("b", cityNames.b);
+
+});
