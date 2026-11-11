@@ -16,7 +16,6 @@
     --danger-tint: #fcecea;
 
     --map-water: #f4f7fa;
-    --map-land: #d3dce6;
 
     /* Type scale */
     --text-sm: 0.875rem;
@@ -254,7 +253,7 @@ main {
     .dashboard {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.75fr);
         grid-template-areas:
-            "units units map"
+            "units units ."
             "a     b     map";
     }
 }
@@ -604,49 +603,33 @@ main {
     border: 1px solid var(--rule);
     border-radius: var(--radius-md);
     overflow: hidden;
+    /* Leaflet's layers use high z-index values; this keeps them below the city dropdown menus */
+    isolation: isolate;
 }
 
+/* The Leaflet map (map.js). It needs a real height, or it shows up 0px tall. */
 .map {
     flex: 1;
+    min-height: 22rem;
+    background: var(--map-water);
+    font-family: inherit;
+}
+
+/* The panel clips anything outside it, so draw the keyboard focus outline inside the map */
+.map:focus-visible {
+    outline-offset: -3px;
+}
+
+/* Shown only if Leaflet couldn't load (map.js puts a message in the map instead) */
+.map:not(.leaflet-container) {
     display: grid;
     place-items: center;
-    padding: clamp(0.75rem, 2vw, 1.5rem);
+    padding: 1rem;
+    color: var(--ink-muted);
+    text-align: center;
 }
 
-.map-frame {
-    position: relative;
-    width: 100%;
-    max-width: 760px;
-}
-
-.map-svg {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-.map-land {
-    fill: var(--map-land);
-}
-
-.map-lakes {
-    fill: var(--map-water);
-}
-
-.map-pin-a,
-.map-pin-b {
-    --pin-size: 1.75rem;
-
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    transform: translate(calc(var(--pin-size) / -2), -50%);
-    pointer-events: none;
-}
-
+/* City pins. Leaflet positions them; these rules only style them. */
 .map-pin-a {
     --city: var(--city-a);
 }
@@ -655,11 +638,23 @@ main {
     --city: var(--city-b);
 }
 
+.map-pin {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* The city's name on the left of its circle (used for the city farther west) */
+.map-pin-label-left {
+    flex-direction: row-reverse;
+}
+
 .map-pin-marker {
+    flex: none;
     display: grid;
     place-items: center;
-    width: var(--pin-size);
-    height: var(--pin-size);
+    width: 1.75rem;
+    height: 1.75rem;
     border: 2px solid var(--surface);
     border-radius: 50%;
     background: var(--city);
@@ -667,6 +662,7 @@ main {
     font-size: var(--text-sm);
     font-weight: 800;
     line-height: 1;
+    box-shadow: 0 1px 4px rgb(22 35 58 / 0.35);
 }
 
 .map-pin-label {
@@ -677,18 +673,12 @@ main {
     font-size: var(--text-sm);
     font-weight: 600;
     white-space: nowrap;
+    box-shadow: 0 1px 4px rgb(22 35 58 / 0.25);
 }
 
+/* Smaller pins on phones, so names fit on the narrower map */
 @media (max-width: 480px) {
-    .map-pin-a,
-    .map-pin-b {
-        --pin-size: 1.4rem;
-    }
-
-    .map-pin-marker {
-        font-size: 0.75rem;
-    }
-
+    .map-pin-marker,
     .map-pin-label {
         font-size: 0.75rem;
     }
