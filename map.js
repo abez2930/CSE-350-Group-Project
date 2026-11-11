@@ -123,9 +123,3 @@ function showCities(cityA, cityB) {
         map.setView(US_CENTER, US_ZOOM);
     }
 }
-
-// Sample display
-showCities(
-    { name: "Louisville, KY", lat: 38.1667, lon: -85.65 },
-    { name: "Denver, CO", lat: 39.7667, lon: -104.8833 }
-);

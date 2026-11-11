@@ -165,13 +165,18 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const cityNames = {
-        a: "Louisville, KY",
-        b: "Denver, CO"
+        a: null,
+        b: null
+    };
+
+    const cityLocations = {
+        a: null,
+        b: null
     };
 
     function citiesAreTheSame(cityKey, cityName) {
         const otherCityKey = cityKey === "a" ? "b" : "a";
-        return cityName.toLowerCase() === cityNames[otherCityKey].toLowerCase();
+        return cityName.toLowerCase() === cityNames[otherCityKey]?.toLowerCase();
     }
 
     const unitLabels = {
@@ -450,6 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!panel) return;
 
         cityNames[cityKey] = cityName;
+        cityLocations[cityKey] = null;
 
         panel.dataset.state = "loading";
 
@@ -485,6 +491,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!match) {
                 throw new Error("City coordinates were not found.");
             }
+
+            cityLocations[cityKey] = {
+                name: cityName,
+                lat: match.latitude,
+                lon: match.longitude
+            };
+            updateMap();
 
 
             // Find the National Weather Service location
@@ -599,8 +612,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             panel.dataset.state = "loaded";
 
-            updateMapLabel(cityKey, cityName);
-
         } catch (error) {
 
             console.error(
@@ -609,6 +620,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             panel.dataset.state = "error";
+            updateMap();
 
             const errorTitle = panel.querySelector(
                 '[data-field="city-name"]'
@@ -622,17 +634,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ==========================================
-    // 10. UPDATE THE MAP CITY LABEL
+    // 10. UPDATE THE MAP
     // ==========================================
 
-    function updateMapLabel(cityKey, cityName) {
-
-        const pin = document.querySelector(
-            `.map-pin-${cityKey} .map-pin-label`
-        );
-
-        if (pin) {
-            pin.textContent = cityName;
+    function updateMap() {
+        if (typeof showCities === "function") {
+            showCities(cityLocations.a, cityLocations.b);
         }
     }
 
@@ -847,8 +854,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 15. LOAD THE DEFAULT CITIES
     // ==========================================
 
-    loadCityWeather("a", cityNames.a);
-
-    loadCityWeather("b", cityNames.b);
+    updateMap();
 
 });
