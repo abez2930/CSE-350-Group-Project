@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mph: "mph",
             kph: "km/h",
             "m/s": "m/s",
-            knots: "knots"
+            knots: "kt"
         }
     };
 
@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "humidity",
             weather.humidity === null
                 ? "Not reported"
-                : `${formatNumber(weather.humidity, 0)}%`
+                : `${formatNumber(weather.humidity, 0)}`
         );
 
         setField(
