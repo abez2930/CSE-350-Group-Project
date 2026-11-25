@@ -310,16 +310,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Temperature and dew point
         setField(
-            "temperature",
-            formatNumber(
-                convertTemperature(
-                    weather.temperatureC,
-                    selectedUnits.temperature
-                )
-            )
-        );
-
-        setField(
             "dewpoint",
             formatNumber(
                 convertTemperature(
