@@ -302,6 +302,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (element) {
                 element.textContent = value;
+                const missing = value.toLowerCase().endsWith("not reported");
+                const target = name === "condition" ? element : element.parentElement;
+                target.classList.toggle("is-missing", missing);
             }
         }
 
@@ -354,6 +357,18 @@ document.addEventListener("DOMContentLoaded", () => {
             weather.humidity === null
                 ? "Not reported"
                 : `${formatNumber(weather.humidity, 0)}`
+        );
+
+        setField(
+            "temperature",
+            weather.temperatureC === null
+                ? "Temperature not reported"
+                : formatNumber(
+                    convertTemperature(
+                        weather.temperatureC,
+                        selectedUnits.temperature
+                    )
+                )
         );
 
         setField(

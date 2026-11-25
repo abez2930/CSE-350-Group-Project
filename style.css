@@ -9,8 +9,8 @@
 
     --city-a: #1a56b0;
     --city-a-tint: #e6eefa;
-    --city-b: #a84a0f;
-    --city-b-tint: #faeee5;
+    --city-b: #b91c1c;
+    --city-b-tint: #fbeaea;
 
     --danger: #a3261b;
     --danger-tint: #fcecea;
@@ -515,7 +515,7 @@ main {
 
 .conditions-temp {
     font-size: var(--text-hero);
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1;
     letter-spacing: -0.03em;
 }
@@ -573,6 +573,12 @@ main {
 
 .readings dd.is-missing {
     font-weight: 400;
+}
+
+.conditions-temp.is-missing,
+.conditions-text.is-missing {
+    font-weight: 400;
+    font-size: 1.25rem;
 }
 
 .is-missing .unit,
