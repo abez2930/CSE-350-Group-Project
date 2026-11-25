@@ -375,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setField(
             "retrieved",
-            new Date().toLocaleString()
+            weather.retrieved.toLocaleString()
         );
 
         setField(
@@ -601,6 +601,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 conditions:
                     p.textDescription || "Conditions not reported",
+
+                retrieved: new Date(),
 
                 observed:
                     p.timestamp || null,
